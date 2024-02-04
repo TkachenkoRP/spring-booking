@@ -1,10 +1,7 @@
 package ru.tkachenko.springbooking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -23,7 +20,9 @@ public class Room {
     private double price;
     private Byte capacity;
     @Column(name = "unavailable_dates")
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<UnavailableDate> unavailableDates;
     @ManyToOne
     @JoinColumn(name = "hotel_id")

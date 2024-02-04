@@ -6,8 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import ru.tkachenko.springbooking.model.Hotel;
+import ru.tkachenko.springbooking.model.Room;
+import ru.tkachenko.springbooking.model.UnavailableDate;
 import ru.tkachenko.springbooking.repository.HotelRepository;
+import ru.tkachenko.springbooking.repository.RoomRepository;
+import ru.tkachenko.springbooking.repository.UnavailableDateRepository;
 
+import java.time.LocalDate;
 import java.util.Random;
 
 @Component
@@ -16,6 +21,8 @@ import java.util.Random;
 @ConditionalOnProperty(prefix = "app.database.init", name = "enabled", havingValue = "true")
 public class InitDatabase {
     private final HotelRepository hotelRepository;
+    private final RoomRepository roomRepository;
+    private final UnavailableDateRepository unavailableDateRepository;
 
     @PostConstruct
     public void initData() {
@@ -25,6 +32,7 @@ public class InitDatabase {
         }
 
         int countHotels = 5;
+        int countRoomsInHotel = 7;
 
         for (int i = 1; i <= countHotels; i++) {
             Hotel hotel = Hotel.builder()
@@ -36,7 +44,26 @@ public class InitDatabase {
                     .rating(0.5 + (5 - 0.5) * new Random().nextDouble())
                     .numberOfRatings(new Random().nextInt((100 - 5) + 1) + 5)
                     .build();
-            hotelRepository.save(hotel);
+            hotel = hotelRepository.save(hotel);
+
+            for (int j = 1; j <= countRoomsInHotel; j++) {
+                Room room = Room.builder()
+                        .name("RoomName_" + i + j)
+                        .description("RoomDescription_" + i + j)
+                        .number(j)
+                        .price(1000 + (5000 - 1000) * new Random().nextDouble())
+                        .capacity((byte) (new Random().nextInt((5 - 1) + 1) + 1))
+                        .hotel(hotel)
+                        .build();
+                room = roomRepository.save(room);
+
+                for (int k = 0; k < 4; ) {
+                    UnavailableDate date = new UnavailableDate();
+                    date.setDate(LocalDate.now().plusDays(++k + j));
+                    date.setRoom(room);
+                    unavailableDateRepository.save(date);
+                }
+            }
         }
     }
 }

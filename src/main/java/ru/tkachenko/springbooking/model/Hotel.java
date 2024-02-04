@@ -1,10 +1,7 @@
 package ru.tkachenko.springbooking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -26,6 +23,8 @@ public class Hotel {
     private double rating;
     @Column(name = "number_of_ratings")
     private int numberOfRatings;
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Room> rooms;
 }
