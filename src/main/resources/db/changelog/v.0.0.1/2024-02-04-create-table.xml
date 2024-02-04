@@ -61,4 +61,18 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2024-02-04-createUsersTable" author="TkachenkoRP">
+        <createTable tableName="users">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)"/>
+            <column name="email" type="varchar(255)"/>
+            <column name="role" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
