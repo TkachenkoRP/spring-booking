@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tkachenko.springbooking.dto.ErrorResponse;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import ru.tkachenko.springbooking.exception.UserRegistrationException;
 
 import java.util.List;
 
@@ -36,6 +37,14 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(UserRegistrationException.class)
+    public ResponseEntity<ErrorResponse> notFound(UserRegistrationException e) {
+        log.error("Ошибка при регистрации пользователя", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getLocalizedMessage()));
     }
 
     @ExceptionHandler(Exception.class)
