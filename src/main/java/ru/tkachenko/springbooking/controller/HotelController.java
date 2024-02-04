@@ -1,5 +1,6 @@
 package ru.tkachenko.springbooking.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class HotelController {
     }
 
     @PostMapping
-    public ResponseEntity<HotelResponse> create(@RequestBody UpsertHotelRequest request) {
+    public ResponseEntity<HotelResponse> create(@RequestBody @Valid UpsertHotelRequest request) {
         Hotel newHotel = hotelService.save(hotelMapper.requestToEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(hotelMapper.entityToResponse(newHotel));
@@ -49,7 +50,7 @@ public class HotelController {
 
     @PutMapping("/{id}")
     public ResponseEntity<HotelResponse> update(@PathVariable Long id,
-                                                @RequestBody UpsertHotelRequest request) {
+                                                @RequestBody @Valid UpsertHotelRequest request) {
         Hotel updatedHotel = hotelService.update(hotelMapper.requestToEntity(id, request));
         return ResponseEntity.ok(hotelMapper.entityToResponse(updatedHotel));
     }

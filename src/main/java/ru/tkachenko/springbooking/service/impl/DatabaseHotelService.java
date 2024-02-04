@@ -3,11 +3,13 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.model.Hotel;
 import ru.tkachenko.springbooking.repository.HotelRepository;
 import ru.tkachenko.springbooking.service.HotelService;
 import ru.tkachenko.springbooking.utils.BeanUtils;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -23,7 +25,9 @@ public class DatabaseHotelService implements HotelService {
     @Override
     public Hotel findById(Long id) {
         return repository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(
+                        "Отель с ID {0} не найден!", id
+                )));
     }
 
     @Override
