@@ -1,6 +1,7 @@
 package ru.tkachenko.springbooking.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.tkachenko.springbooking.model.Hotel;
 import ru.tkachenko.springbooking.repository.HotelRepository;
@@ -15,8 +16,8 @@ public class DatabaseHotelService implements HotelService {
     private final HotelRepository repository;
 
     @Override
-    public List<Hotel> findAll() {
-        return repository.findAll();
+    public List<Hotel> findAll(Pageable pageable) {
+        return repository.findAll(pageable).getContent();
     }
 
     @Override
