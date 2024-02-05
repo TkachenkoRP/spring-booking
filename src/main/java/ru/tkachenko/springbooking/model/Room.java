@@ -19,12 +19,15 @@ public class Room {
     private int number;
     private double price;
     private Byte capacity;
-    @Column(name = "unavailable_dates")
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<UnavailableDate> unavailableDates;
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Booking> bookings;
 }

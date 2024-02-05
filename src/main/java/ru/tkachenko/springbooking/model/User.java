@@ -21,4 +21,8 @@ public class User {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<UserRole> roles;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Booking> bookings;
 }

@@ -92,4 +92,22 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2024-02-05-createBookings" author="TkachenkoRP">
+        <createTable tableName="bookings">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="arrivalDate" type="date"/>
+            <column name="departureDate" type="date"/>
+            <column name="room_id" type="bigint">
+                <constraints foreignKeyName="fk_bookings_room"
+                             references="rooms(id)"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_bookings_user"
+                             references="users(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
