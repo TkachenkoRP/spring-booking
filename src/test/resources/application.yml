@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:12.3:///test
+  liquibase:
+    contexts: test
+    change-log: classpath:db/changelog/db.changelog-master.xml

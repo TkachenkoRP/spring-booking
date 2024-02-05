@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="2024-02-05-add-test-data-in-hotels" author="TkachenkoRP" context="test">
+        <loadData tableName="hotels" file="data/hotels-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="name" type="varchar(255)"/>
+            <column header="title" type="varchar(255)"/>
+            <column header="city" type="varchar(255)"/>
+            <column header="address" type="VARCHAR(255)"/>
+            <column header="distance_from_city_center" type="double precision"/>
+            <column header="rating" type="double precision"/>
+            <column header="number_of_ratings" type="integer"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-05-add-test-data-in-rooms" author="TkachenkoRP" context="test">
+        <loadData tableName="rooms" file="data/rooms-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="name" type="varchar(255)"/>
+            <column header="description" type="text"/>
+            <column header="number" type="integer"/>
+            <column header="price" type="double precision"/>
+            <column header="capacity" type="tinyint"/>
+            <column header="hotel_id" type="bigint"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-05-add-test-data-in-users" author="TkachenkoRP" context="test">
+        <loadData tableName="users" file="data/users-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="name" type="varchar(255)"/>
+            <column header="password" type="varchar(255)"/>
+            <column header="email" type="varchar(255)"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-05-add-test-data-in-user-role" author="TkachenkoRP" context="test">
+        <loadData tableName="user_role" file="data/user-role-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="authority" type="varchar(255)"/>
+            <column header="user_id" type="bigint"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-05-update-sequences" author="TkachenkoRP" context="test">
+        <sql>
+        <![CDATA[
+            SELECT setval('hotels_id_seq', (SELECT MAX(id) FROM hotels));
+            SELECT setval('rooms_id_seq', (SELECT MAX(id) FROM rooms));
+            SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+            SELECT setval('user_role_id_seq', (SELECT MAX(id) FROM user_role));
+            ]]>
+    </sql>
+    </changeSet>
+
+</databaseChangeLog>

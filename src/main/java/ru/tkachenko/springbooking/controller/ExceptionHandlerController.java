@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tkachenko.springbooking.dto.ErrorResponse;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import ru.tkachenko.springbooking.exception.UserRegistrationException;
+import ru.tkachenko.springbooking.exception.UserException;
 
 import java.util.List;
 
@@ -39,12 +40,19 @@ public class ExceptionHandlerController {
                 .body(new ErrorResponse(errorMessage));
     }
 
-    @ExceptionHandler(UserRegistrationException.class)
-    public ResponseEntity<ErrorResponse> notFound(UserRegistrationException e) {
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ErrorResponse> notFound(UserException e) {
         log.error("Ошибка при регистрации пользователя", e);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParameter(MissingServletRequestParameterException ex) {
+        String parameterName = ex.getParameterName();
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("Отсутствует параметр запроса: " + parameterName + "!"));
     }
 
     @ExceptionHandler(Exception.class)

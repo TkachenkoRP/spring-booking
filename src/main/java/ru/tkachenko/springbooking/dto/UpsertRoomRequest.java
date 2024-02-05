@@ -14,13 +14,13 @@ public class UpsertRoomRequest {
     @NotBlank(message = "Укажите описание комнаты!")
     private String description;
     @NotNull(message = "Укажите номер комнаты!")
-    @Positive(message = "Номер комнаты должен быть больше 0!")
-    @Max(value = 100, message = "Номер комнаты должен быть меньше {value}!")
+    @Positive(message = "Номер комнаты должен быть от 1 до 100!")
+    @Max(value = 100, message = "Номер комнаты должен быть от 1 до 100!")
     private Integer number;
     @Positive(message = "Укажите стоимость комнаты!")
     private double price;
     @Min(value = 1, message = "Количество мест в комнате должно быть больше {value}!")
     private byte capacity;
-    @NotNull(message = "Укажите номер отеля!")
+    @NotNull(message = "Укажите ID отеля!")
     private Long hotelId;
 }

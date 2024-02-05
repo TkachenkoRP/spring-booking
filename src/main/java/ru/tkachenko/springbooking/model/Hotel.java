@@ -19,10 +19,10 @@ public class Hotel {
     private String city;
     private String address;
     @Column(name = "distance_from_city_center")
-    private double distanceFromCityCenter;
-    private double rating;
+    private Double distanceFromCityCenter;
+    private Double rating;
     @Column(name = "number_of_ratings")
-    private int numberOfRatings;
+    private Integer numberOfRatings;
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

@@ -3,7 +3,7 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
-import ru.tkachenko.springbooking.exception.UserRegistrationException;
+import ru.tkachenko.springbooking.exception.UserException;
 import ru.tkachenko.springbooking.model.RoleType;
 import ru.tkachenko.springbooking.model.User;
 import ru.tkachenko.springbooking.model.UserRole;
@@ -42,15 +42,22 @@ public class DatabaseUserService implements UserService {
     }
 
     @Override
-    public User save(User user, RoleType roleType) {
+    public User save(User user, String roleType) {
         if (repository.existsByNameOrEmail(user.getName(), user.getEmail())) {
-            throw new UserRegistrationException(MessageFormat.format(
+            throw new UserException(MessageFormat.format(
                     "Пользователь с именем {0} и/или электронной почтой {1} уже зарегистрирован!",
                     user.getName(), user.getEmail())
             );
         }
-        UserRole role =  UserRole.from(roleType, user);
-        user.setRoles(Collections.singletonList(role));
+        try {
+            UserRole role = UserRole.from(Enum.valueOf(RoleType.class, roleType), user);
+            user.setRoles(Collections.singletonList(role));
+        } catch (IllegalArgumentException e) {
+            throw new UserException(MessageFormat.format(
+                    "Неверное значение роли: {0}!",
+                    roleType));
+        }
+
         return repository.saveAndFlush(user);
     }
 
@@ -58,6 +65,14 @@ public class DatabaseUserService implements UserService {
     public User update(User user) {
         User existedUser = findById(user.getId());
         BeanUtils.copyNonNullProperties(user, existedUser);
+        if (repository.existsByNameAndIdNotOrEmailAndIdNot(
+                existedUser.getName(), existedUser.getId(),
+                existedUser.getEmail(), existedUser.getId())) {
+            throw new UserException(MessageFormat.format(
+                    "Пользователь с именем {0} и/или электронной почтой {1} уже зарегистрирован!",
+                    user.getName(), user.getEmail())
+            );
+        }
         return repository.save(existedUser);
     }
 

@@ -1,0 +1,4 @@
+id,authority,user_id
+1,ROLE_USER,1
+2,ROLE_ADMIN,2
+3,ROLE_USER,3

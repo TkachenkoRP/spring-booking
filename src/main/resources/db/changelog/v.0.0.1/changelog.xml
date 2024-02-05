@@ -10,4 +10,6 @@
 
     <include file="2024-02-04-create-table.xml" relativeToChangelogFile="true"/>
 
+    <include file="2024-02-05-add-data-test.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.tkachenko.springbooking.dto.UpsertUserRequest;
 import ru.tkachenko.springbooking.dto.UserResponse;
 import ru.tkachenko.springbooking.mapper.UserMapper;
-import ru.tkachenko.springbooking.model.RoleType;
 import ru.tkachenko.springbooking.model.User;
 import ru.tkachenko.springbooking.service.UserService;
 
@@ -36,7 +35,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody @Valid UpsertUserRequest request,
-                                               @RequestParam RoleType roleType) {
+                                               @RequestParam String roleType) {
         User newUser = userService.save(userMapper.requestToEntity(request), roleType);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userMapper.entityToResponse(newUser));
