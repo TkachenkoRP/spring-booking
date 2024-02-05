@@ -74,5 +74,22 @@
             <column name="role" type="varchar(255)"/>
         </createTable>
     </changeSet>
+    
+    <changeSet id="2024-02-05-editUsersTable" author="TkachenkoRP">
+        <dropColumn tableName="users" columnName="role"/>
+    </changeSet>
+
+    <changeSet id="2024-02-05-createUserRole" author="TkachenkoRP">
+        <createTable tableName="user_role">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="authority" type="varchar(255)"/>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_user_role_user"
+                             references="users(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

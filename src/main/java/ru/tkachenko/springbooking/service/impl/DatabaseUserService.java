@@ -6,11 +6,13 @@ import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.exception.UserRegistrationException;
 import ru.tkachenko.springbooking.model.RoleType;
 import ru.tkachenko.springbooking.model.User;
+import ru.tkachenko.springbooking.model.UserRole;
 import ru.tkachenko.springbooking.repository.UserRepository;
 import ru.tkachenko.springbooking.service.UserService;
 import ru.tkachenko.springbooking.utils.BeanUtils;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -40,15 +42,16 @@ public class DatabaseUserService implements UserService {
     }
 
     @Override
-    public User save(User user, RoleType role) {
+    public User save(User user, RoleType roleType) {
         if (repository.existsByNameOrEmail(user.getName(), user.getEmail())) {
             throw new UserRegistrationException(MessageFormat.format(
                     "Пользователь с именем {0} и/или электронной почтой {1} уже зарегистрирован!",
                     user.getName(), user.getEmail())
             );
         }
-        user.setRole(role);
-        return repository.save(user);
+        UserRole role =  UserRole.from(roleType, user);
+        user.setRoles(Collections.singletonList(role));
+        return repository.saveAndFlush(user);
     }
 
     @Override

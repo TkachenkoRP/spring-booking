@@ -12,6 +12,7 @@ import ru.tkachenko.springbooking.repository.UnavailableDateRepository;
 import ru.tkachenko.springbooking.repository.UserRepository;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Random;
 
 @Component
@@ -72,9 +73,13 @@ public class InitDatabase {
                     .name("User_" + ++i)
                     .password("pass")
                     .email("mail_" + i)
-                    .role(i % 2 == 0 ? RoleType.ROLE_USER : RoleType.ROLE_ADMIN)
                     .build();
-            userRepository.save(user);
+
+            UserRole role = UserRole.from(i % 2 == 0 ? RoleType.ROLE_USER : RoleType.ROLE_ADMIN, user);
+
+            user.setRoles(Collections.singletonList(role));
+
+            userRepository.saveAndFlush(user);
         }
     }
 }
