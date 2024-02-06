@@ -1,6 +1,6 @@
 id,name,title,city,address,distance_from_city_center,rating,number_of_ratings
-1,Hotel_1,Hotel_Title_1,Hotel_City_1,Hotel_Address_1,0.555,4.55,33
-2,Hotel_2,Hotel_Title_2,Hotel_City_2,Hotel_Address_2,12.123,1.23,99
-3,Hotel_3,Hotel_Title_3,Hotel_City_2,Hotel_Address_3,3.45,2.55,334
-4,Hotel_4,Hotel_Title_4,Hotel_City_1,Hotel_Address_4,1.15,3.33,444
-5,Hotel_5,Hotel_Title_5,Hotel_City_1,Hotel_Address_5,23.443,2.11,133
+1,Hotel_1,Hotel_Title_1,Hotel_City_1,Hotel_Address_1,0.55,4.55,33
+2,Hotel_2,Hotel_Title_2,Hotel_City_2,Hotel_Address_2,12.12,5.00,100
+3,Hotel_3,Hotel_Title_3,Hotel_City_2,Hotel_Address_3,3.45,1.00,100
+4,Hotel_4,Hotel_Title_4,Hotel_City_1,Hotel_Address_4,1.15,3.33,54
+5,Hotel_5,Hotel_Title_5,Hotel_City_1,Hotel_Address_5,23.44,2.11,133

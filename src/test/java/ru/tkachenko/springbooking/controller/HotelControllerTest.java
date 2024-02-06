@@ -6,6 +6,9 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.tkachenko.springbooking.AbstractTestController;
@@ -13,6 +16,8 @@ import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.HotelListResponse;
 import ru.tkachenko.springbooking.dto.HotelResponse;
 import ru.tkachenko.springbooking.dto.UpsertHotelRequest;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -75,7 +80,7 @@ public class HotelControllerTest extends AbstractTestController {
         assertEquals("Hotel_Title_1", response.getTitle());
         assertEquals("Hotel_City_1", response.getCity());
         assertEquals("Hotel_Address_1", response.getAddress());
-        assertEquals(0.555, response.getDistanceFromCityCenter());
+        assertEquals(0.55, response.getDistanceFromCityCenter());
         assertEquals(4.55, response.getRating());
         assertEquals(33, response.getNumberOfRatings());
     }
@@ -374,5 +379,100 @@ public class HotelControllerTest extends AbstractTestController {
     public void whenDeleteHotelByIdWithoutRole_thenReturnUnauthorized() throws Exception {
         mockMvc.perform(delete("/api/hotel/5"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenChangeRating_thenReturnHotelWithNewRating() throws Exception {
+        String actualResponse = mockMvc.perform(put("/api/hotel/4/vote/5"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelResponse response = objectMapper.readValue(actualResponse, HotelResponse.class);
+
+        assertEquals(4, response.getId());
+        assertEquals("Hotel_4", response.getName());
+        assertEquals("Hotel_Title_4", response.getTitle());
+        assertEquals("Hotel_City_1", response.getCity());
+        assertEquals("Hotel_Address_4", response.getAddress());
+        assertEquals(1.15, response.getDistanceFromCityCenter());
+        assertTrue(response.getRating() > 3.33);
+        assertEquals(3.36, response.getRating());
+        assertEquals(55, response.getNumberOfRatings());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenChangeRatingMax_thenReturnHotelWithOldRating() throws Exception {
+        String actualResponse = mockMvc.perform(put("/api/hotel/2/vote/5"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelResponse response = objectMapper.readValue(actualResponse, HotelResponse.class);
+
+        assertEquals(2, response.getId());
+        assertEquals("Hotel_2", response.getName());
+        assertEquals("Hotel_Title_2", response.getTitle());
+        assertEquals("Hotel_City_2", response.getCity());
+        assertEquals("Hotel_Address_2", response.getAddress());
+        assertEquals(12.12, response.getDistanceFromCityCenter());
+        assertEquals(5.00, response.getRating());
+        assertEquals(101, response.getNumberOfRatings());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenChangeRatingMin_thenReturnHotelWithOldRating() throws Exception {
+        String actualResponse = mockMvc.perform(put("/api/hotel/3/vote/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelResponse response = objectMapper.readValue(actualResponse, HotelResponse.class);
+
+        assertEquals(3, response.getId());
+        assertEquals("Hotel_3", response.getName());
+        assertEquals("Hotel_Title_3", response.getTitle());
+        assertEquals("Hotel_City_2", response.getCity());
+        assertEquals("Hotel_Address_3", response.getAddress());
+        assertEquals(3.45, response.getDistanceFromCityCenter());
+        assertEquals(1.00, response.getRating());
+        assertEquals(101, response.getNumberOfRatings());
+    }
+
+    @ParameterizedTest
+    @WithMockUser(username = "User")
+    @MethodSource("invalidNumbers")
+    public void whenChangeRatingWithWrongNewMark_thenReturnUnauthorized(int newMark) throws Exception {
+        var response = mockMvc.perform(put("/api/hotel/4/vote/" + newMark))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        response.setCharacterEncoding("UTF-8");
+
+        String actualResponse = response.getContentAsString();
+        String expectResponse = StringTestUtils.readStringFromResource("response/wrong_hotel_new_mark.json");
+
+        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
+    }
+
+    @Test
+    public void whenChangeRatingWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/hotel/4/vote/5"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    private static Stream<Arguments> invalidNumbers() {
+        return Stream.of(
+                Arguments.of(-1),
+                Arguments.of(0),
+                Arguments.of(6)
+        );
     }
 }
