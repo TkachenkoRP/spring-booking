@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                         .requestMatchers("/api/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/hotel/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/hotel/{id}/vote/**").authenticated()
                         .requestMatchers("/api/hotel/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/room/**").authenticated()
                         .requestMatchers("/api/room/**").hasRole("ADMIN")

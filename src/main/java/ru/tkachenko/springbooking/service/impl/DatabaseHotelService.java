@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
+import ru.tkachenko.springbooking.exception.HotelException;
 import ru.tkachenko.springbooking.model.Hotel;
 import ru.tkachenko.springbooking.repository.HotelRepository;
 import ru.tkachenko.springbooking.service.HotelService;
@@ -45,5 +46,31 @@ public class DatabaseHotelService implements HotelService {
     @Override
     public void deleteById(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public Hotel updateRating(Long id, int newMark) {
+
+        if (newMark < 1 || newMark > 5) {
+            throw new HotelException("Недопустимая оценка. Оценка должна быть между 1 и 5.");
+        }
+
+        Hotel existedHotel = findById(id);
+
+        double rating = existedHotel.getRating();
+        int numberOfRating = existedHotel.getNumberOfRatings();
+
+        double totalRating = rating * numberOfRating;
+
+        totalRating = totalRating - rating + newMark;
+
+        rating = Math.round((totalRating / numberOfRating) * 100.0) / 100.0;
+
+        numberOfRating = numberOfRating + 1;
+
+        existedHotel.setRating(rating);
+        existedHotel.setNumberOfRatings(numberOfRating);
+
+        return repository.save(existedHotel);
     }
 }

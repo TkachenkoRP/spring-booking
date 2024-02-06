@@ -14,6 +14,7 @@ import ru.tkachenko.springbooking.dto.ErrorResponse;
 import ru.tkachenko.springbooking.exception.BookingDateException;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import ru.tkachenko.springbooking.exception.HotelException;
 import ru.tkachenko.springbooking.exception.UserException;
 
 import java.util.List;
@@ -79,5 +80,13 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Произошла внутренняя ошибка сервера. Пожалуйста, повторите запрос позже."));
+    }
+
+    @ExceptionHandler(HotelException.class)
+    public ResponseEntity<ErrorResponse> notFound(HotelException e) {
+        log.error("Ошибка при работе с Hotel", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getLocalizedMessage()));
     }
 }

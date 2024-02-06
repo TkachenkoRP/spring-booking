@@ -60,4 +60,10 @@ public class HotelController {
         hotelService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/vote/{newMark}")
+    public ResponseEntity<HotelResponse> vote(@PathVariable Long id, @PathVariable int newMark) {
+        Hotel hotel = hotelService.updateRating(id, newMark);
+        return ResponseEntity.ok(hotelMapper.entityToResponse(hotel));
+    }
 }

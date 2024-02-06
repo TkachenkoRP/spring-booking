@@ -56,8 +56,8 @@ public class InitDatabase {
                     .title("Title Hotel " + i)
                     .city(i % 2 == 0 ? "City_1" : "City_2")
                     .address("Address_" + i)
-                    .distanceFromCityCenter(0.5 + (5 - 0.5) * new Random().nextDouble())
-                    .rating(0.5 + (5 - 0.5) * new Random().nextDouble())
+                    .distanceFromCityCenter(Math.round((0.5 + (5 - 0.5) * new Random().nextDouble()) * 100.0) / 100.0)
+                    .rating(Math.round((0.5 + (5 - 0.5) * new Random().nextDouble()) * 100.0) / 100.0)
                     .numberOfRatings(new Random().nextInt((100 - 5) + 1) + 5)
                     .build();
             hotel = hotelRepository.save(hotel);
@@ -67,7 +67,7 @@ public class InitDatabase {
                         .name("RoomName_" + i + j)
                         .description("RoomDescription_" + i + j)
                         .number(j)
-                        .price(1000 + (5000 - 1000) * new Random().nextDouble())
+                        .price(Math.round((1000 + (5000 - 1000) * new Random().nextDouble()) * 100.0) / 100.0)
                         .capacity((byte) (new Random().nextInt((5 - 1) + 1) + 1))
                         .hotel(hotel)
                         .build();
