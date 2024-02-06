@@ -3,6 +3,8 @@ package ru.tkachenko.springbooking.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -61,6 +63,14 @@ public class ExceptionHandlerController {
         log.error("Ошибка при бронировании", e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> notAccess(AccessDeniedException e) {
+        log.error("Access denied: {}", e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("Вы не авторизированы, либо у Вас нет доступа!"));
     }
 
     @ExceptionHandler(Exception.class)

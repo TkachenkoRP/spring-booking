@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.tkachenko.springbooking.AbstractTestController;
 import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.*;
@@ -28,6 +29,7 @@ public class BookingControllerRTest extends AbstractTestController {
     UnavailableDateRepository unavailableDateRepository;
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @Order(1)
     public void whenFindAllBookings_thenReturnAllBookings() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/booking"))
@@ -43,6 +45,20 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenFindAllBookingsWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/booking"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenFindAllBookingsWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/booking"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
     public void whenCreateBooking_thenReturnNewBooking() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -66,6 +82,13 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    public void whenCreateBookingWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/booking"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithoutArrivalDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -88,6 +111,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongArrivalDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -111,6 +135,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithoutDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -133,6 +158,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -156,6 +182,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithoutRoomId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -178,6 +205,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithoutUserId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setRoomId(2L);
@@ -200,6 +228,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongUserId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(500L);
@@ -223,6 +252,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongRoomId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(2L);
@@ -246,6 +276,7 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWenArrivalDateAfterDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
@@ -270,12 +301,13 @@ public class BookingControllerRTest extends AbstractTestController {
 
 
     @Test
+    @WithMockUser(username = "User")
     public void whenCreateBookingWithFalseDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
         request.setRoomId(1L);
-        request.setArrivalDate(LocalDate.of(2024,2,22));
-        request.setDepartureDate(LocalDate.of(2024,2,27));
+        request.setArrivalDate(LocalDate.of(2024, 2, 22));
+        request.setDepartureDate(LocalDate.of(2024, 2, 27));
 
         var response = mockMvc.perform(post("/api/booking")
                         .contentType(MediaType.APPLICATION_JSON)

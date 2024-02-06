@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.tkachenko.springbooking.AbstractTestController;
 import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.UpsertUserRequest;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest extends AbstractTestController {
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @Order(1)
     public void whenFindAllUsers_thenReturnAllUsers() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/user"))
@@ -36,6 +38,20 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenFindAllUsersWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/user"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenFindAllUsersWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/user"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenFindByIdUser_thenReturnUser() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/user/1"))
                 .andExpect(status().isOk())
@@ -50,6 +66,20 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenFindByIdUserWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/user/1"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenFindByIdUserWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/user/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenFindByWrongIdUser_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/user/500"))
                 .andExpect(status().isNotFound())
@@ -242,6 +272,7 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateUser_thenReturnUpdatedUser() throws Exception {
         UpsertUserRequest request = new UpsertUserRequest();
         request.setName("New Name update");
@@ -263,6 +294,20 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenUpdateUserWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(put("/api/user/2"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenUpdateUserWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/user/2"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateUserUseHimselfName_thenReturnUpdatedUser() throws Exception {
         UpsertUserRequest request = new UpsertUserRequest();
         request.setName("User_Name_3");
@@ -284,6 +329,7 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateUserUseHimselfEmail_thenReturnUpdatedUser() throws Exception {
         UpsertUserRequest request = new UpsertUserRequest();
         request.setName("User_Name_1 Update");
@@ -305,6 +351,7 @@ public class UserControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenDeleteUser_thenReturnStatusNoContent() throws Exception {
         mockMvc.perform(get("/api/user/3"))
                 .andExpect(status().isOk());
@@ -312,5 +359,18 @@ public class UserControllerTest extends AbstractTestController {
                 .andExpect(status().isNoContent());
         mockMvc.perform(get("/api/user/3"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenDeleteUserWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(delete("/api/user/3"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenDeleteUserWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(delete("/api/user/3"))
+                .andExpect(status().isUnauthorized());
     }
 }

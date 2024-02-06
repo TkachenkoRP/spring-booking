@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.tkachenko.springbooking.AbstractTestController;
 import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.HotelListResponse;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HotelControllerTest extends AbstractTestController {
     @Test
+    @WithMockUser(username = "User")
     @Order(1)
     public void whenFindAllHotels_thenReturnAllHotels() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/hotel"))
@@ -35,6 +37,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
     @Order(1)
     public void whenFindAllHotelsWithPagination_thenReturnAllHotels() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/hotel?pageSize=2&pageNumber=0"))
@@ -50,6 +53,13 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    public void whenFindAllHotelsWithoutAuthenticated_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/hotel"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
     @Order(2)
     public void whenFindByIdHotel_thenReturnHotel() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/hotel/1"))
@@ -71,6 +81,13 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    public void whenFindByIdHotelWithoutAuthenticated_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/hotel/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
     public void whenFindByWrongId_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/hotel/500"))
                 .andExpect(status().isNotFound())
@@ -86,6 +103,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @Order(3)
     public void whenCreateHotel_thenReturnNewHotel() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
@@ -108,6 +126,20 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenCreateHotelWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(post("/api/hotel"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenCreateHotelWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/hotel"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithoutName_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setTitle("New Title");
@@ -131,6 +163,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithoutTitle_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -154,6 +187,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithoutCity_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -177,6 +211,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithoutAddress_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -200,6 +235,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithoutDistance_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -223,6 +259,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateHotelWithWrongDistance_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -247,6 +284,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @Order(4)
     public void whenUpdateHotel_thenReturnUpdatedHotel() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
@@ -276,6 +314,20 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenUpdateHotelWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(put("/api/hotel/5"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenUpdateHotelWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/hotel/5"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateHotelWithWrongId_thenReturnError() throws Exception {
         UpsertHotelRequest request = new UpsertHotelRequest();
         request.setName("New name");
@@ -300,6 +352,7 @@ public class HotelControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @Order(5)
     public void whenDeleteHotelById_thenReturnStatusNoContent() throws Exception {
         mockMvc.perform(get("/api/hotel/5"))
@@ -308,5 +361,18 @@ public class HotelControllerTest extends AbstractTestController {
                 .andExpect(status().isNoContent());
         mockMvc.perform(get("/api/hotel/5"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    public void whenDeleteHotelByIdWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(delete("/api/hotel/5"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenDeleteHotelByIdWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(delete("/api/hotel/5"))
+                .andExpect(status().isUnauthorized());
     }
 }

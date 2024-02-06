@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.tkachenko.springbooking.AbstractTestController;
 import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.RoomResponse;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RoomControllerTest extends AbstractTestController {
 
     @Test
+    @WithMockUser(username = "User")
     public void whenFindByIdRoom_thenReturnRoom() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room/1"))
                 .andExpect(status().isOk())
@@ -38,6 +40,13 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    public void whenFindByIdRoomWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/room/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
     public void whenFindByWrongId_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/room/500"))
                 .andExpect(status().isNotFound())
@@ -53,6 +62,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoom_thenReturnNewRoom() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -75,6 +85,20 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenCreateRoomWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(post("/api/room"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenCreateRoomWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/room"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutName_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setDescription("New Description");
@@ -99,6 +123,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutDescription_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -123,6 +148,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutNumber_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -148,6 +174,7 @@ public class RoomControllerTest extends AbstractTestController {
 
 
     @ParameterizedTest
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @MethodSource("invalidNumbers")
     public void whenCreateRoomWithWrongNumber_thenReturnError(int number) throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
@@ -174,6 +201,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutPrice_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -198,6 +226,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithWrongPrice_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -223,6 +252,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutCapacity_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -247,6 +277,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWitWrongCapacity_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -272,6 +303,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithoutHotelId_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -296,6 +328,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenCreateRoomWithWrongHotelId_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -321,6 +354,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateRoom_thenReturnUpdatedRoom() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -348,6 +382,20 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "User")
+    public void whenUpdateRoomWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(put("/api/room/2"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenUpdateRoomWithoutRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/room/2"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenUpdateRoomWithWrongId_thenReturnError() throws Exception {
         UpsertRoomRequest request = new UpsertRoomRequest();
         request.setName("New Name");
@@ -373,6 +421,7 @@ public class RoomControllerTest extends AbstractTestController {
     }
 
     @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
     public void whenDeleteRoomById_thenReturnStatusNoContent() throws Exception {
         mockMvc.perform(get("/api/room/20"))
                 .andExpect(status().isOk());
@@ -380,6 +429,19 @@ public class RoomControllerTest extends AbstractTestController {
                 .andExpect(status().isNoContent());
         mockMvc.perform(get("/api/room/20"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenDeleteRoomByIdWithWrongRole_thenReturnForbidden() throws Exception {
+        mockMvc.perform(delete("/api/room/20"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void whenDeleteRoomByIdWithWrongRole_thenReturnUnauthorized() throws Exception {
+        mockMvc.perform(delete("/api/room/20"))
+                .andExpect(status().isUnauthorized());
     }
 
     private static Stream<Arguments> invalidNumbers() {
