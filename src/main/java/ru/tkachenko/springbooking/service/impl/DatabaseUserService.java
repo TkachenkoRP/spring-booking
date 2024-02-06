@@ -1,6 +1,7 @@
 package ru.tkachenko.springbooking.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.exception.UserException;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DatabaseUserService implements UserService {
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User findByName(String name) {
@@ -57,6 +59,8 @@ public class DatabaseUserService implements UserService {
                     "Неверное значение роли: {0}!",
                     roleType));
         }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return repository.saveAndFlush(user);
     }

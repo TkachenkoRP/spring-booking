@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.tkachenko.springbooking.model.*;
 import ru.tkachenko.springbooking.repository.*;
@@ -22,6 +23,7 @@ public class InitDatabase {
     private final UnavailableDateRepository unavailableDateRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void initData() {
@@ -37,7 +39,7 @@ public class InitDatabase {
         for (int i = 0; i < countUser; ) {
             User user = User.builder()
                     .name("User_" + ++i)
-                    .password("pass")
+                    .password(passwordEncoder.encode("111"))
                     .email("mail_" + i)
                     .build();
 

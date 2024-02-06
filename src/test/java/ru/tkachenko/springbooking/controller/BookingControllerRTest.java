@@ -274,8 +274,8 @@ public class BookingControllerRTest extends AbstractTestController {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setUserId(1L);
         request.setRoomId(1L);
-        request.setArrivalDate(LocalDate.of(2024,02,22));
-        request.setDepartureDate(LocalDate.of(2024,02,27));
+        request.setArrivalDate(LocalDate.of(2024,2,22));
+        request.setDepartureDate(LocalDate.of(2024,2,27));
 
         var response = mockMvc.perform(post("/api/booking")
                         .contentType(MediaType.APPLICATION_JSON)

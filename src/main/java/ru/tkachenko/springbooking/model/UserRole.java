@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Data
 @Entity(name = "user_role")
@@ -20,6 +22,10 @@ public class UserRole {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User user;
+
+    public GrantedAuthority toAuthority() {
+        return new SimpleGrantedAuthority(authority.name());
+    }
 
     public static UserRole from(RoleType roleType, User user) {
         var role = new UserRole();
