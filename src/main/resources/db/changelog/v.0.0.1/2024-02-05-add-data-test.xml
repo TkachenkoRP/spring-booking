@@ -61,4 +61,33 @@
     </sql>
     </changeSet>
 
+    <changeSet id="2024-02-06-add-test-data-in-bookings" author="TkachenkoRP" context="test">
+        <loadData tableName="bookings" file="data/booking-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="arrival_date" type="date"/>
+            <column header="departure_date" type="date"/>
+            <column header="room_id" type="bigint"/>
+            <column header="user_id" type="bigint"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-06-add-test-data-in-unavailable-dates" author="TkachenkoRP" context="test">
+        <loadData tableName="unavailable_dates" file="data/unavailable-date-test.csv" relativeToChangelogFile="true" commentLineStartsWith="#" encoding="UTF-8" quotchar="'"
+                  separator=",">
+            <column header="id" type="bigint"/>
+            <column header="room_id" type="bigint"/>
+            <column header="date" type="date"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="2024-02-06-update-sequences" author="TkachenkoRP" context="test">
+        <sql>
+        <![CDATA[
+            SELECT setval('bookings_id_seq', (SELECT MAX(id) FROM bookings));
+            SELECT setval('unavailable_dates_id_seq', (SELECT MAX(id) FROM unavailable_dates));
+            ]]>
+    </sql>
+    </changeSet>
+
 </databaseChangeLog>

@@ -9,6 +9,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tkachenko.springbooking.dto.ErrorResponse;
+import ru.tkachenko.springbooking.exception.BookingDateException;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import ru.tkachenko.springbooking.exception.UserException;
@@ -53,6 +54,13 @@ public class ExceptionHandlerController {
         String parameterName = ex.getParameterName();
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("Отсутствует параметр запроса: " + parameterName + "!"));
+    }
+
+    @ExceptionHandler(BookingDateException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParameter(BookingDateException e) {
+        log.error("Ошибка при бронировании", e);
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getLocalizedMessage()));
     }
 
     @ExceptionHandler(Exception.class)

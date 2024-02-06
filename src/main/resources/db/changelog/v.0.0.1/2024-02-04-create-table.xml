@@ -74,7 +74,7 @@
             <column name="role" type="varchar(255)"/>
         </createTable>
     </changeSet>
-    
+
     <changeSet id="2024-02-05-editUsersTable" author="TkachenkoRP">
         <dropColumn tableName="users" columnName="role"/>
     </changeSet>
@@ -108,6 +108,11 @@
                              references="users(id)"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2024-02-06-renameColumnsInBookings" author="TkachenkoRP">
+        <renameColumn tableName="bookings" oldColumnName="arrivalDate" newColumnName="arrival_date"/>
+        <renameColumn tableName="bookings" oldColumnName="departureDate" newColumnName="departure_date"/>
     </changeSet>
 
 </databaseChangeLog>
