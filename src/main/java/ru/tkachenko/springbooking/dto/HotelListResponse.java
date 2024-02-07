@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class HotelListResponse {
     private List<HotelResponse> hotels;
+    private Long countHotels;
     private int pageSize;
     private int pageNumber;
 }

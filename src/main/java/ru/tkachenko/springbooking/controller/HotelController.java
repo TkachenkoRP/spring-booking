@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.tkachenko.springbooking.dto.HotelFilter;
 import ru.tkachenko.springbooking.dto.HotelListResponse;
 import ru.tkachenko.springbooking.dto.HotelResponse;
 import ru.tkachenko.springbooking.dto.UpsertHotelRequest;
@@ -25,15 +26,22 @@ public class HotelController {
     private final HotelMapper hotelMapper;
 
     @GetMapping
-    public ResponseEntity<HotelListResponse> findAll(@RequestParam(defaultValue = "20") int pageSize,
+    public ResponseEntity<HotelListResponse> findAll(HotelFilter filter,
+                                                     @RequestParam(defaultValue = "20") int pageSize,
                                                      @RequestParam(defaultValue = "0") int pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
 
-        List<HotelResponse> hotelResponses = hotelService.findAll(pageable)
+        List<HotelResponse> hotelResponses = hotelService.findAll(pageable, filter)
                 .stream().map(hotelMapper::entityToResponse)
                 .toList();
 
-        return ResponseEntity.ok(new HotelListResponse(hotelResponses, pageable.getPageSize(), pageable.getPageNumber()));
+        return ResponseEntity.ok(new HotelListResponse(
+                        hotelResponses,
+                        hotelService.count(),
+                        pageable.getPageSize(),
+                        pageable.getPageNumber()
+                )
+        );
     }
 
     @GetMapping("/{id}")

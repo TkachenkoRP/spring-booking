@@ -3,6 +3,8 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.tkachenko.springbooking.controller.specification.HotelSpecification;
+import ru.tkachenko.springbooking.dto.HotelFilter;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.exception.HotelException;
 import ru.tkachenko.springbooking.model.Hotel;
@@ -19,8 +21,8 @@ public class DatabaseHotelService implements HotelService {
     private final HotelRepository repository;
 
     @Override
-    public List<Hotel> findAll(Pageable pageable) {
-        return repository.findAll(pageable).getContent();
+    public List<Hotel> findAll(Pageable pageable, HotelFilter filter) {
+        return repository.findAll(HotelSpecification.withFilter(filter), pageable).getContent();
     }
 
     @Override
@@ -72,5 +74,10 @@ public class DatabaseHotelService implements HotelService {
         existedHotel.setNumberOfRatings(numberOfRating);
 
         return repository.save(existedHotel);
+    }
+
+    @Override
+    public Long count() {
+        return repository.count();
     }
 }
