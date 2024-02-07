@@ -20,6 +20,4 @@ public class UpsertBookingRequest {
     private LocalDate departureDate;
     @NotNull(message = "Укажите ID комнаты!")
     private Long roomId;
-    @NotNull(message = "Укажите ID Пользователя!")
-    private Long userId;
 }

@@ -58,15 +58,14 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
-    @WithMockUser(username = "User")
-    public void whenCreateBooking_thenReturnNewBooking() throws Exception {
+    public void whenCreateBookingUserAuthorization_thenReturnNewBooking() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setArrivalDate(LocalDate.now().plusDays(1));
         request.setDepartureDate(LocalDate.now().plusDays(10));
 
         String actualResponse = mockMvc.perform(post("/api/booking")
+                        .header("Authorization", USER_AUTHORIZATION)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -78,6 +77,7 @@ public class BookingControllerRTest extends AbstractTestController {
 
         BookingResponse response = objectMapper.readValue(actualResponse, BookingResponse.class);
         assertEquals(4, response.getId());
+        assertEquals(1, response.getUser().getId());
         assertEquals(32, count);
     }
 
@@ -91,7 +91,6 @@ public class BookingControllerRTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenCreateBookingWithoutArrivalDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setDepartureDate(LocalDate.now().plusDays(10));
 
@@ -114,7 +113,6 @@ public class BookingControllerRTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongArrivalDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setArrivalDate(LocalDate.now().minusDays(1));
         request.setDepartureDate(LocalDate.now().plusDays(10));
@@ -138,7 +136,6 @@ public class BookingControllerRTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenCreateBookingWithoutDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setArrivalDate(LocalDate.now().plusDays(1));
 
@@ -161,7 +158,6 @@ public class BookingControllerRTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setArrivalDate(LocalDate.now().plusDays(1));
         request.setDepartureDate(LocalDate.now().minusDays(10));
@@ -185,7 +181,6 @@ public class BookingControllerRTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenCreateBookingWithoutRoomId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setArrivalDate(LocalDate.now().plusDays(1));
         request.setDepartureDate(LocalDate.now().plusDays(10));
 
@@ -205,62 +200,14 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
-    @WithMockUser(username = "User")
-    public void whenCreateBookingWithoutUserId_thenReturnError() throws Exception {
-        UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setRoomId(2L);
-        request.setArrivalDate(LocalDate.now().plusDays(1));
-        request.setDepartureDate(LocalDate.now().plusDays(10));
-
-        var response = mockMvc.perform(post("/api/booking")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse();
-
-        response.setCharacterEncoding("UTF-8");
-
-        String actualResponse = response.getContentAsString();
-        String expectResponse = StringTestUtils.readStringFromResource("response/create_booking_without_user_id.json");
-
-        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
-    }
-
-    @Test
-    @WithMockUser(username = "User")
-    public void whenCreateBookingWithWrongUserId_thenReturnError() throws Exception {
-        UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(500L);
-        request.setRoomId(2L);
-        request.setArrivalDate(LocalDate.now().plusDays(1));
-        request.setDepartureDate(LocalDate.now().plusDays(10));
-
-        var response = mockMvc.perform(post("/api/booking")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNotFound())
-                .andReturn()
-                .getResponse();
-
-        response.setCharacterEncoding("UTF-8");
-
-        String actualResponse = response.getContentAsString();
-        String expectResponse = StringTestUtils.readStringFromResource("response/wrong_user_id_500_not_found_response.json");
-
-        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
-    }
-
-    @Test
-    @WithMockUser(username = "User")
     public void whenCreateBookingWithWrongRoomId_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(2L);
         request.setRoomId(500L);
         request.setArrivalDate(LocalDate.now().plusDays(1));
         request.setDepartureDate(LocalDate.now().plusDays(10));
 
         var response = mockMvc.perform(post("/api/booking")
+                        .header("Authorization", USER_AUTHORIZATION)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -276,15 +223,14 @@ public class BookingControllerRTest extends AbstractTestController {
     }
 
     @Test
-    @WithMockUser(username = "User")
     public void whenCreateBookingWenArrivalDateAfterDepartureDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(2L);
         request.setArrivalDate(LocalDate.now().plusDays(35));
         request.setDepartureDate(LocalDate.now().plusDays(30));
 
         var response = mockMvc.perform(post("/api/booking")
+                        .header("Authorization", USER_AUTHORIZATION)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -301,15 +247,14 @@ public class BookingControllerRTest extends AbstractTestController {
 
 
     @Test
-    @WithMockUser(username = "User")
     public void whenCreateBookingWithFalseDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
-        request.setUserId(1L);
         request.setRoomId(1L);
         request.setArrivalDate(LocalDate.of(2024, 2, 22));
         request.setDepartureDate(LocalDate.of(2024, 2, 27));
 
         var response = mockMvc.perform(post("/api/booking")
+                        .header("Authorization", USER_AUTHORIZATION)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())

@@ -6,6 +6,7 @@ import ru.tkachenko.springbooking.exception.BookingDateException;
 import ru.tkachenko.springbooking.model.Booking;
 import ru.tkachenko.springbooking.model.Room;
 import ru.tkachenko.springbooking.model.UnavailableDate;
+import ru.tkachenko.springbooking.model.User;
 import ru.tkachenko.springbooking.repository.BookingRepository;
 import ru.tkachenko.springbooking.repository.UnavailableDateRepository;
 import ru.tkachenko.springbooking.service.BookingService;
@@ -26,11 +27,13 @@ public class DatabaseBookingService implements BookingService {
     }
 
     @Override
-    public Booking save(Booking booking) {
+    public Booking save(User user, Booking booking) {
 
         if (booking.getArrivalDate().isAfter(booking.getDepartureDate())) {
             throw new BookingDateException("Дата заезда не может быть позже даты выезда!");
         }
+
+        booking.setUser(user);
 
         Room room = booking.getRoom();
 

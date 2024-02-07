@@ -4,13 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.tkachenko.springbooking.dto.UpsertBookingRequest;
 import ru.tkachenko.springbooking.model.Booking;
 import ru.tkachenko.springbooking.service.RoomService;
-import ru.tkachenko.springbooking.service.UserService;
 
 public abstract class BookingMapperDelegate implements BookingMapper {
     @Autowired
     private RoomService roomService;
-    @Autowired
-    private UserService userService;
 
     @Override
     public Booking requestToEntity(UpsertBookingRequest request) {
@@ -18,7 +15,6 @@ public abstract class BookingMapperDelegate implements BookingMapper {
         booking.setArrivalDate(request.getArrivalDate());
         booking.setDepartureDate(request.getDepartureDate());
         booking.setRoom(roomService.findById(request.getRoomId()));
-        booking.setUser(userService.findById(request.getUserId()));
         return booking;
     }
 

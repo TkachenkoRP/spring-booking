@@ -11,10 +11,15 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Base64;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 public abstract class AbstractTestController {
+
+    protected static String USER_AUTHORIZATION = "Basic " + Base64.getEncoder().encodeToString("User_Name_1:111".getBytes());
+
     @Container
     private static final PostgreSQLContainer<?> postgresContainer =
             new PostgreSQLContainer<>("postgres:12.3");

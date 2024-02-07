@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.tkachenko.springbooking.dto.BookingResponse;
 import ru.tkachenko.springbooking.dto.UpsertBookingRequest;
 import ru.tkachenko.springbooking.mapper.BookingMapper;
 import ru.tkachenko.springbooking.model.Booking;
+import ru.tkachenko.springbooking.security.AppUserPrincipal;
 import ru.tkachenko.springbooking.service.BookingService;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class BookingController {
     }
 
     @PostMapping
-    private ResponseEntity<BookingResponse> create(@RequestBody @Valid UpsertBookingRequest request) {
-        Booking newBooking = bookingService.save(bookingMapper.requestToEntity(request));
+    private ResponseEntity<BookingResponse> create(@RequestBody @Valid UpsertBookingRequest request, @AuthenticationPrincipal AppUserPrincipal userPrincipal) {
+        Booking newBooking = bookingService.save(userPrincipal.getUser(), bookingMapper.requestToEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingMapper.entityToResponse(newBooking));
     }
 }
