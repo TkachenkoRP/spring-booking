@@ -17,6 +17,7 @@ import ru.tkachenko.springbooking.dto.HotelListResponse;
 import ru.tkachenko.springbooking.dto.HotelResponse;
 import ru.tkachenko.springbooking.dto.UpsertHotelRequest;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +57,223 @@ public class HotelControllerTest extends AbstractTestController {
 
         assertEquals(2, hotelListResponse.getHotels().size());
     }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithIdFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("id", "1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(1, hotelListResponse.getHotels().size());
+        assertEquals(1, hotelListResponse.getHotels().get(0).getId());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithWrongIdFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("id", "0"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(0, hotelListResponse.getHotels().size());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithNameFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("name", "Hotel_3"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(1, hotelListResponse.getHotels().size());
+        assertEquals(3, hotelListResponse.getHotels().get(0).getId());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithTitleFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("title", "Hotel_Title_2"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(1, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertEquals("Hotel_Title_2", hotel.getTitle());
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithCityFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("city", "Hotel_City_2"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(2, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertEquals("Hotel_City_2", hotel.getCity());
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithAddressFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("address", "Hotel_Address_4"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(1, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertEquals("Hotel_Address_4", hotel.getAddress());
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithDistanceFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("distance", "5"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(3, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertTrue(hotel.getDistanceFromCityCenter() <= 5.0);
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithRatingFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("rating", "4"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(2, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertTrue(hotel.getRating() >= 4.0);
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithNumberOfRatingsFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("numberOfRatings", "100"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(3, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertTrue(hotel.getNumberOfRatings() >= 100);
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    @Order(1)
+    public void whenFindAllHotelsWithRatingAndNumberOfRatingsFilter_thenReturnFilteredHotels() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/hotel")
+                        .param("rating", "3.5")
+                        .param("numberOfRatings", "100"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        HotelListResponse hotelListResponse = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        List<HotelResponse> hotels = hotelListResponse.getHotels();
+
+        assertEquals(1, hotels.size());
+
+        for (HotelResponse hotel : hotels) {
+            assertTrue(hotel.getRating() >= 3.5);
+            assertTrue(hotel.getNumberOfRatings() >= 100);
+        }
+    }
+
 
     @Test
     public void whenFindAllHotelsWithoutAuthenticated_thenReturnUnauthorized() throws Exception {
