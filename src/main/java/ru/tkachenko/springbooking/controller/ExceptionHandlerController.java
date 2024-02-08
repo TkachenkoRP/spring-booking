@@ -11,12 +11,13 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tkachenko.springbooking.dto.ErrorResponse;
-import ru.tkachenko.springbooking.exception.BookingDateException;
+import ru.tkachenko.springbooking.exception.DateException;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import ru.tkachenko.springbooking.exception.HotelException;
 import ru.tkachenko.springbooking.exception.UserException;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -59,8 +60,8 @@ public class ExceptionHandlerController {
                 .body(new ErrorResponse("Отсутствует параметр запроса: " + parameterName + "!"));
     }
 
-    @ExceptionHandler(BookingDateException.class)
-    public ResponseEntity<ErrorResponse> handleMissingParameter(BookingDateException e) {
+    @ExceptionHandler(DateException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParameter(DateException e) {
         log.error("Ошибка при бронировании", e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getLocalizedMessage()));
@@ -80,6 +81,14 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Произошла внутренняя ошибка сервера. Пожалуйста, повторите запрос позже."));
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> dateException(DateTimeParseException e) {
+        log.error("Ошибка ввода даты", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Ошибка ввода даты!"));
     }
 
     @ExceptionHandler(HotelException.class)

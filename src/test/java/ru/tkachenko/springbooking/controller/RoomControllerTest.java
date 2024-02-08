@@ -1,7 +1,11 @@
 package ru.tkachenko.springbooking.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import net.javacrumbs.jsonunit.JsonAssert;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,13 +16,341 @@ import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.RoomResponse;
 import ru.tkachenko.springbooking.dto.UpsertRoomRequest;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RoomControllerTest extends AbstractTestController {
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRooms_thenReturnAllRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(20, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithPagination_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("pageSize", "3")
+                        .param("pageNumber", "1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(3, roomResponses.size());
+        assertEquals(4, roomResponses.get(0).getId());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithIdFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("id", "1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(1, roomResponses.size());
+        assertEquals(1, roomResponses.get(0).getId());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithNameFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("name", "Room_Name_3_1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(1, roomResponses.size());
+        assertEquals(11, roomResponses.get(0).getId());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithMinPriceFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("minPrice", "2000"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        for (RoomResponse room : roomResponses) {
+            assertTrue(room.getPrice() >= 2000);
+        }
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithMaxPriceFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("maxPrice", "2000"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        for (RoomResponse room : roomResponses) {
+            assertTrue(room.getPrice() <= 2000);
+        }
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithMinMaxPriceFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("minPrice", "1000")
+                        .param("maxPrice", "3000"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        for (RoomResponse room : roomResponses) {
+            assertTrue(room.getPrice() >= 1000 && room.getPrice() <= 3000);
+        }
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithCountGuestFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("countGuest", "3"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        for (RoomResponse room : roomResponses) {
+            assertEquals((byte) 3, room.getCapacity());
+        }
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnAllRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-03-02")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(20, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-02-22")
+                        .param("departureDate", "2024-03-06"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(17, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRoomsPlusOne() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-02-22")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(18, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRoomsPlusTwo() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-03-01")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(19, roomResponses.size());
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithWrongDateFilter_thenReturnError() throws Exception {
+        var response = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-033-01")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        response.setCharacterEncoding("UTF-8");
+
+        String actualResponse = response.getContentAsString();
+        String expectResponse = StringTestUtils.readStringFromResource("response/wrong_date_room_filter.json");
+
+        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalDateIsBeforeDepartureDateFilter_thenReturnError() throws Exception {
+        var response = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-03-05")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        response.setCharacterEncoding("UTF-8");
+
+        String actualResponse = response.getContentAsString();
+        String expectResponse = StringTestUtils.readStringFromResource("response/when_arrival_date_after_departure_date.json");
+
+        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
+    }
+
+    @Test
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithDateIsBeforeNowFilter_thenReturnError() throws Exception {
+        var response = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2023-03-05")
+                        .param("departureDate", "2024-03-04"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        response.setCharacterEncoding("UTF-8");
+
+        String actualResponse = response.getContentAsString();
+        String expectResponse = StringTestUtils.readStringFromResource("response/when_date_before_now.json");
+
+        JsonAssert.assertJsonEquals(expectResponse, actualResponse);
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithArrivalDateFilter_thenReturnAllRoomsWithoutFilter() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("arrivalDate", "2024-02-22"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(20, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithDepartureDateFilter_thenReturnAllRoomsWithoutFilter() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("departureDate", "2024-03-07"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(20, roomResponses.size());
+    }
+
+    @Test
+    @Order(1)
+    @WithMockUser(username = "User")
+    public void whenFindAllRoomsWithHotelIdFilter_thenReturnFilteredRooms() throws Exception {
+        String actualResponse = mockMvc.perform(get("/api/room")
+                        .param("hotelId", "5"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<RoomResponse> roomResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
+        });
+
+        assertEquals(4, roomResponses.size());
+    }
 
     @Test
     @WithMockUser(username = "User")

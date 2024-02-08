@@ -2,7 +2,7 @@ package ru.tkachenko.springbooking.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.tkachenko.springbooking.exception.BookingDateException;
+import ru.tkachenko.springbooking.exception.DateException;
 import ru.tkachenko.springbooking.model.Booking;
 import ru.tkachenko.springbooking.model.Room;
 import ru.tkachenko.springbooking.model.UnavailableDate;
@@ -30,7 +30,7 @@ public class DatabaseBookingService implements BookingService {
     public Booking save(User user, Booking booking) {
 
         if (booking.getArrivalDate().isAfter(booking.getDepartureDate())) {
-            throw new BookingDateException("Дата заезда не может быть позже даты выезда!");
+            throw new DateException("Дата заезда не может быть позже даты выезда!");
         }
 
         booking.setUser(user);
@@ -45,7 +45,7 @@ public class DatabaseBookingService implements BookingService {
         );
 
         if (datesUnavailable) {
-            throw new BookingDateException("Комната на Ваши даты забронирована!");
+            throw new DateException("Комната на Ваши даты забронирована!");
         }
 
         List<UnavailableDate> unavailableDate =

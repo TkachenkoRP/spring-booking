@@ -2,6 +2,7 @@ package ru.tkachenko.springbooking.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@FieldNameConstants
 @Entity(name = "rooms")
 public class Room {
     @Id

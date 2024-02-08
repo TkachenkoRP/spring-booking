@@ -41,7 +41,7 @@ public class BookingControllerRTest extends AbstractTestController {
         List<BookingResponse> bookingResponses = objectMapper.readValue(actualResponse, new TypeReference<>() {
         });
 
-        assertEquals(3, bookingResponses.size());
+        assertEquals(4, bookingResponses.size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class BookingControllerRTest extends AbstractTestController {
         long count = unavailableDateRepository.count();
 
         BookingResponse response = objectMapper.readValue(actualResponse, BookingResponse.class);
-        assertEquals(4, response.getId());
+        assertEquals(5, response.getId());
         assertEquals(1, response.getUser().getId());
         assertEquals(32, count);
     }
@@ -240,7 +240,7 @@ public class BookingControllerRTest extends AbstractTestController {
         response.setCharacterEncoding("UTF-8");
 
         String actualResponse = response.getContentAsString();
-        String expectResponse = StringTestUtils.readStringFromResource("response/create_booking_wen_arrival_date_after_departure_date.json");
+        String expectResponse = StringTestUtils.readStringFromResource("response/when_arrival_date_after_departure_date.json");
 
         JsonAssert.assertJsonEquals(expectResponse, actualResponse);
     }
