@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class BookingControllerRTest extends AbstractTestController {
+public class BookingControllerTest extends AbstractTestController {
 
     @Autowired
     UnavailableDateRepository unavailableDateRepository;

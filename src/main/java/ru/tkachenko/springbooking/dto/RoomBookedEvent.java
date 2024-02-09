@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomBookedEvent {
+public class RoomBookedEvent implements Event {
     private Long userId;
     private String checkInDate;
     private String checkOutDate;

@@ -7,6 +7,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import ru.tkachenko.springbooking.dto.Event;
 import ru.tkachenko.springbooking.dto.RoomBookedEvent;
 import ru.tkachenko.springbooking.dto.UserRegisteredEvent;
 import ru.tkachenko.springbooking.service.KafkaService;
@@ -15,7 +16,7 @@ import ru.tkachenko.springbooking.service.KafkaService;
 @Slf4j
 @RequiredArgsConstructor
 public class RoomBookedEventListener {
-    private final KafkaService kafkaService;
+    private final KafkaService<Event> kafkaService;
 
     @KafkaListener(topics = "${app.kafka.kafkaRoomBookedEventTopic}",
             groupId = "${app.kafka.kafkaMessageGroupId}",

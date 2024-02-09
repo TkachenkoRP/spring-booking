@@ -12,6 +12,10 @@ spring:
     contexts: dev
   kafka:
     bootstrap-servers: localhost:9892
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/events_hotels?authSource=admin
+
 
 app:
   database:

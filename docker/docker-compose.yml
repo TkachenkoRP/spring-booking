@@ -31,3 +31,12 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://$DOCKERHOST:9892
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPIC_ENABLE: 'true'
+
+  mongodb:
+    image: mongo:6.0.8
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: events_hotels
