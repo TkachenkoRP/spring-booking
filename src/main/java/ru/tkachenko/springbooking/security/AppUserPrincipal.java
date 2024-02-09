@@ -1,5 +1,6 @@
 package ru.tkachenko.springbooking.security;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,11 +11,8 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public class AppUserPrincipal implements UserDetails {
+    @Getter
     private final User user;
-
-    public User getUser() {
-        return user;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

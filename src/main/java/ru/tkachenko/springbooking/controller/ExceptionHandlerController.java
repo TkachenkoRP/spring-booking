@@ -11,12 +11,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tkachenko.springbooking.dto.ErrorResponse;
-import ru.tkachenko.springbooking.exception.DateException;
-import ru.tkachenko.springbooking.exception.EntityNotFoundException;
+import ru.tkachenko.springbooking.exception.*;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import ru.tkachenko.springbooking.exception.HotelException;
-import ru.tkachenko.springbooking.exception.UserException;
 
+import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -94,6 +92,14 @@ public class ExceptionHandlerController {
     @ExceptionHandler(HotelException.class)
     public ResponseEntity<ErrorResponse> notFound(HotelException e) {
         log.error("Ошибка при работе с Hotel", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(CreateFolderException.class)
+    public ResponseEntity<ErrorResponse> errorWithFileWork(CreateFolderException e) {
+        log.error("Ошибка при работе с файлами", e);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getLocalizedMessage()));

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import ru.tkachenko.springbooking.dto.RoomBookedEvent;
 import ru.tkachenko.springbooking.dto.UserRegisteredEvent;
+import ru.tkachenko.springbooking.exception.CreateFolderException;
 import ru.tkachenko.springbooking.service.StatisticService;
 
 import java.io.File;
@@ -24,7 +25,9 @@ public class DatabaseStatisticService implements StatisticService {
         String path = "C:" + File.separator + pathToFolder + File.separator;
         File directory = new File(path);
         if (!directory.exists()) {
-            directory.mkdirs();
+            if (!directory.mkdirs()) {
+                throw new CreateFolderException("Не удалось создать каталог: " + directory.getAbsolutePath());
+            }
         }
         exportRoomBookedEventDataToCsv(path);
         exportUserRegisteredEventDataToCsv(path);

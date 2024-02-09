@@ -11,7 +11,7 @@ public abstract class RoomMapperDelegate implements RoomMapper {
 
     @Override
     public Room requestToEntity(UpsertRoomRequest request) {
-        Room room = Room.builder()
+        return Room.builder()
                 .name(request.getName())
                 .description(request.getDescription())
                 .number(request.getNumber())
@@ -19,7 +19,6 @@ public abstract class RoomMapperDelegate implements RoomMapper {
                 .capacity(request.getCapacity())
                 .hotel(hotelService.findById(request.getHotelId()))
                 .build();
-        return room;
     }
 
     @Override
