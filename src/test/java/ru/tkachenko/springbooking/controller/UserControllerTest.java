@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import ru.tkachenko.springbooking.AbstractTestController;
 import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.UpsertUserRequest;
+import ru.tkachenko.springbooking.dto.UserRegisteredEvent;
 import ru.tkachenko.springbooking.dto.UserResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,6 +35,10 @@ public class UserControllerTest extends AbstractTestController {
 
         UserResponse response = objectMapper.readValue(actualResponse, UserResponse.class);
         assertEquals(4, response.getId());
+
+        UserRegisteredEvent receivedEvent = getKafkaMessage(UserRegisteredEvent.class, KAFKA_USER_TOPIC);
+
+        assertEquals(response.getId(), receivedEvent.getUserId());
     }
 
     @Test

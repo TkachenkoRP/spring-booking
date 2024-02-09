@@ -59,10 +59,13 @@ public class BookingControllerRTest extends AbstractTestController {
 
     @Test
     public void whenCreateBookingUserAuthorization_thenReturnNewBooking() throws Exception {
+        LocalDate from = LocalDate.now().plusDays(1);
+        LocalDate to = LocalDate.now().plusDays(10);
+
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setRoomId(2L);
-        request.setArrivalDate(LocalDate.now().plusDays(1));
-        request.setDepartureDate(LocalDate.now().plusDays(10));
+        request.setArrivalDate(from);
+        request.setDepartureDate(to);
 
         String actualResponse = mockMvc.perform(post("/api/booking")
                         .header("Authorization", USER_AUTHORIZATION)
@@ -79,6 +82,12 @@ public class BookingControllerRTest extends AbstractTestController {
         assertEquals(5, response.getId());
         assertEquals(1, response.getUser().getId());
         assertEquals(32, count);
+
+        RoomBookedEvent receivedEvent = getKafkaMessage(RoomBookedEvent.class, KAFKA_BOOKING_TOPIC);
+
+        assertEquals(1, receivedEvent.getUserId());
+        assertEquals(from.toString(), receivedEvent.getCheckInDate());
+        assertEquals(to.toString(), receivedEvent.getCheckOutDate());
     }
 
     @Test

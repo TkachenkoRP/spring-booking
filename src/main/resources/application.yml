@@ -10,8 +10,14 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
     contexts: dev
+  kafka:
+    bootstrap-servers: localhost:9892
 
 app:
   database:
     init:
       enabled: false
+  kafka:
+    kafkaRoomBookedEventTopic: "room-booked-event-topic"
+    kafkaUserRegistryEventTopic: "user-registry-event-topic"
+    kafkaMessageGroupId: "kafka-app-group-id"
