@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +60,8 @@ public class BookingControllerTest extends AbstractTestController {
 
     @Test
     public void whenCreateBookingUserAuthorization_thenReturnNewBooking() throws Exception {
+        int sizeMongoBefore = mongoTemplate.findAll(RoomBookedEvent.class).size();
+
         LocalDate from = LocalDate.now().plusDays(1);
         LocalDate to = LocalDate.now().plusDays(10);
 
@@ -88,6 +91,14 @@ public class BookingControllerTest extends AbstractTestController {
         assertEquals(1, receivedEvent.getUserId());
         assertEquals(from.toString(), receivedEvent.getCheckInDate());
         assertEquals(to.toString(), receivedEvent.getCheckOutDate());
+
+        int sizeMongoAfter = mongoTemplate.findAll(RoomBookedEvent.class).size();
+        RoomBookedEvent mongoItem = mongoTemplate.findAll(RoomBookedEvent.class).get(0);
+
+        assertTrue(sizeMongoBefore != sizeMongoAfter);
+        assertEquals(mongoItem.getUserId(), receivedEvent.getUserId());
+        assertEquals(mongoItem.getCheckInDate(), receivedEvent.getCheckInDate());
+        assertEquals(mongoItem.getCheckOutDate(), receivedEvent.getCheckOutDate());
     }
 
     @Test

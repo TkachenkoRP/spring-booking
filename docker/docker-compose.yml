@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: postgres:12.3
+    image: postgres:latest
     ports:
       - "5432:5432"
     environment:
@@ -12,14 +12,14 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:6.2.0
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "2181:2181"
 
   kafka:
-    image: confluentinc/cp-kafka:6.2.0
+    image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
     ports:
@@ -33,7 +33,7 @@ services:
       KAFKA_AUTO_CREATE_TOPIC_ENABLE: 'true'
 
   mongodb:
-    image: mongo:6.0.8
+    image: mongo:latest
     ports:
       - "27017:27017"
     environment:

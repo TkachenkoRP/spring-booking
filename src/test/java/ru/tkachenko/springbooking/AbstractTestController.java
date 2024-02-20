@@ -8,15 +8,19 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -25,6 +29,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
@@ -37,12 +42,18 @@ public abstract class AbstractTestController {
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer =
-            new PostgreSQLContainer<>("postgres:12.3");
+            new PostgreSQLContainer<>("postgres:latest")
+                    .waitingFor(Wait.forListeningPort());
 
     @Container
     private static final KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:6.2.0")
-    );
+            DockerImageName.parse("confluentinc/cp-kafka:latest")
+    ).waitingFor(Wait.forListeningPort());
+
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
+            DockerImageName.parse("mongo:latest")
+    ).waitingFor(Wait.forListeningPort());
 
     @DynamicPropertySource
     static void postgresProperties(DynamicPropertyRegistry registry) {
@@ -53,6 +64,7 @@ public abstract class AbstractTestController {
         registry.add("app.kafka.kafkaMessageGroupId", () -> "kafka-app-group-id");
         registry.add("app.kafka.kafkaRoomBookedEventTopic", () -> KAFKA_BOOKING_TOPIC);
         registry.add("app.kafka.kafkaUserRegistryEventTopic", () -> KAFKA_USER_TOPIC);
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
     }
 
     @Autowired
@@ -60,6 +72,9 @@ public abstract class AbstractTestController {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected MongoTemplate mongoTemplate;
 
     protected <T> T getKafkaMessage(Class<T> messageType, String topic) {
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(kafka.getBootstrapServers(), KAFKA_GROUP, "true");

@@ -12,6 +12,7 @@ import ru.tkachenko.springbooking.dto.UserRegisteredEvent;
 import ru.tkachenko.springbooking.dto.UserResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends AbstractTestController {
     @Test
     public void whenCreateUser_thenReturnNewUser() throws Exception {
+        int sizeMongoBefore = mongoTemplate.findAll(UserRegisteredEvent.class).size();
+
         UpsertUserRequest request = new UpsertUserRequest();
         request.setName("New Name");
         request.setEmail("New Email");
@@ -37,8 +40,13 @@ public class UserControllerTest extends AbstractTestController {
         assertEquals(4, response.getId());
 
         UserRegisteredEvent receivedEvent = getKafkaMessage(UserRegisteredEvent.class, KAFKA_USER_TOPIC);
-
         assertEquals(response.getId(), receivedEvent.getUserId());
+
+        int sizeMongoAfter = mongoTemplate.findAll(UserRegisteredEvent.class).size();
+        UserRegisteredEvent mongoItem = mongoTemplate.findAll(UserRegisteredEvent.class).get(0);
+
+        assertTrue(sizeMongoBefore != sizeMongoAfter);
+        assertEquals(mongoItem.getUserId(), receivedEvent.getUserId());
     }
 
     @Test
