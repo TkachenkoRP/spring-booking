@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
+    jacoco
 }
 
 group = "ru.tkachenko"
@@ -44,8 +45,21 @@ dependencies {
     testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:mongodb")
     testImplementation("org.awaitility:awaitility:4.2.0")
+    implementation("org.jacoco:jacoco-maven-plugin:0.8.11")
+    implementation("org.apache.maven.reporting:maven-reporting-api:4.0.0-M10")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+
+tasks{
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            html.required.set(true)
+        }
+    }
 }
