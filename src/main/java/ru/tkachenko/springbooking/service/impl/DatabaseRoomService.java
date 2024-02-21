@@ -3,6 +3,7 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tkachenko.springbooking.controller.specification.RoomSpecification;
 import ru.tkachenko.springbooking.dto.RoomFilter;
 import ru.tkachenko.springbooking.exception.DateException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DatabaseRoomService implements RoomService {
     private final RoomRepository repository;
 
@@ -52,11 +54,13 @@ public class DatabaseRoomService implements RoomService {
     }
 
     @Override
+    @Transactional
     public Room save(Room room) {
         return repository.save(room);
     }
 
     @Override
+    @Transactional
     public Room update(Room room) {
         Room existedRoom = findById(room.getId());
         BeanUtils.copyNonNullProperties(room, existedRoom);
@@ -64,6 +68,7 @@ public class DatabaseRoomService implements RoomService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         repository.deleteById(id);
     }

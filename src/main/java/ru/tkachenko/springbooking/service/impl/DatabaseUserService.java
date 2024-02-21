@@ -3,6 +3,7 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.exception.UserException;
 import ru.tkachenko.springbooking.model.RoleType;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DatabaseUserService implements UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -44,6 +46,7 @@ public class DatabaseUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public User save(User user, String roleType) {
         if (repository.existsByNameOrEmail(user.getName(), user.getEmail())) {
             throw new UserException(MessageFormat.format(
@@ -66,6 +69,7 @@ public class DatabaseUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public User update(User user) {
         User existedUser = findById(user.getId());
         BeanUtils.copyNonNullProperties(user, existedUser);
@@ -81,6 +85,7 @@ public class DatabaseUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         repository.deleteById(id);
     }

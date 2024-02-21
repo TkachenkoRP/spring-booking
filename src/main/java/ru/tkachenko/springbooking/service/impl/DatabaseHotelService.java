@@ -3,6 +3,7 @@ package ru.tkachenko.springbooking.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tkachenko.springbooking.controller.specification.HotelSpecification;
 import ru.tkachenko.springbooking.dto.HotelFilter;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DatabaseHotelService implements HotelService {
     private final HotelRepository repository;
 
@@ -34,11 +36,13 @@ public class DatabaseHotelService implements HotelService {
     }
 
     @Override
+    @Transactional
     public Hotel save(Hotel hotel) {
         return repository.save(hotel);
     }
 
     @Override
+    @Transactional
     public Hotel update(Hotel hotel) {
         Hotel existedHotel = findById(hotel.getId());
         BeanUtils.copyNonNullProperties(hotel, existedHotel);
@@ -46,11 +50,13 @@ public class DatabaseHotelService implements HotelService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         repository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public Hotel updateRating(Long id, int newMark) {
 
         if (newMark < 1 || newMark > 5) {

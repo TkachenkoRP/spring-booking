@@ -2,6 +2,7 @@ package ru.tkachenko.springbooking.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tkachenko.springbooking.exception.DateException;
 import ru.tkachenko.springbooking.model.Booking;
 import ru.tkachenko.springbooking.model.Room;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DatabaseBookingService implements BookingService {
     private final BookingRepository repository;
     private final UnavailableDateRepository unavailableDateRepository;
@@ -27,6 +29,7 @@ public class DatabaseBookingService implements BookingService {
     }
 
     @Override
+    @Transactional
     public Booking save(User user, Booking booking) {
 
         if (booking.getArrivalDate().isAfter(booking.getDepartureDate())) {
