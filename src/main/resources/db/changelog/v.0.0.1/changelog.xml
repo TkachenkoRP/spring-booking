@@ -12,4 +12,6 @@
 
     <include file="2024-02-05-add-data-test.xml" relativeToChangelogFile="true"/>
 
+    <include file="2024-02-21-add-timestamp-columns.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="2024-02-21-addTimeStampColumnsInTables" author="TkachenkoRP">
+        <addColumn tableName="bookings">
+            <column name="create_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+        <addColumn tableName="hotels">
+            <column name="create_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+        <addColumn tableName="rooms">
+            <column name="create_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="create_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

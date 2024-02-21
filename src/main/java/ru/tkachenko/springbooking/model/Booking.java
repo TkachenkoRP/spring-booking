@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
@@ -29,4 +32,10 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @CreationTimestamp
+    @Column(name = "create_at")
+    private Instant createAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 }
