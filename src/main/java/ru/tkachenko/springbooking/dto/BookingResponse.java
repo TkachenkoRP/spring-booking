@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
@@ -15,4 +16,5 @@ public class BookingResponse {
     private LocalDate departureDate;
     private RoomResponse room;
     private UserResponse user;
+    private Instant createAt;
 }

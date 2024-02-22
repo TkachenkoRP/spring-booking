@@ -8,10 +8,10 @@ import ru.tkachenko.springbooking.controller.specification.HotelSpecification;
 import ru.tkachenko.springbooking.dto.HotelFilter;
 import ru.tkachenko.springbooking.exception.EntityNotFoundException;
 import ru.tkachenko.springbooking.exception.HotelException;
+import ru.tkachenko.springbooking.mapper.HotelMapper;
 import ru.tkachenko.springbooking.model.Hotel;
 import ru.tkachenko.springbooking.repository.HotelRepository;
 import ru.tkachenko.springbooking.service.HotelService;
-import ru.tkachenko.springbooking.utils.BeanUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -21,6 +21,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class DatabaseHotelService implements HotelService {
     private final HotelRepository repository;
+    private final HotelMapper hotelMapper;
 
     @Override
     public List<Hotel> findAll(Pageable pageable, HotelFilter filter) {
@@ -45,7 +46,7 @@ public class DatabaseHotelService implements HotelService {
     @Transactional
     public Hotel update(Hotel hotel) {
         Hotel existedHotel = findById(hotel.getId());
-        BeanUtils.copyNonNullProperties(hotel, existedHotel);
+        hotelMapper.updateHotel(hotel, existedHotel);
         return repository.save(existedHotel);
     }
 

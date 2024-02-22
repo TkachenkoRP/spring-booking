@@ -24,7 +24,7 @@ public class Room {
     private int number;
     private double price;
     private Byte capacity;
-     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<UnavailableDate> unavailableDates;

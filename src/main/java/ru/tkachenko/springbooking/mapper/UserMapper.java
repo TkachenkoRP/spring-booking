@@ -15,5 +15,4 @@ public interface UserMapper {
     UpsertUserRequest entityToUpsertRequest(User user);
 
     UserResponse entityToResponse(User user);
-
 }
