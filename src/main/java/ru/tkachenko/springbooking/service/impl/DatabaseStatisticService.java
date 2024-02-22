@@ -22,7 +22,8 @@ public class DatabaseStatisticService implements StatisticService {
     private final MongoTemplate mongoTemplate;
 
     public void exportDataToCsv(String pathToFolder) {
-        String path = "C:" + File.separator + pathToFolder + File.separator;
+        pathToFolder = pathToFolder.replace("/", File.separator);
+        String path = pathToFolder + File.separator;
         File directory = new File(path);
         if (!directory.exists()) {
             if (!directory.mkdirs()) {

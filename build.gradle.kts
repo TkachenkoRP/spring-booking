@@ -47,6 +47,7 @@ dependencies {
     testImplementation("org.awaitility:awaitility:4.2.0")
     implementation("org.jacoco:jacoco-maven-plugin:0.8.11")
     implementation("org.apache.maven.reporting:maven-reporting-api:4.0.0-M10")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 }
 
 tasks.withType<Test> {
