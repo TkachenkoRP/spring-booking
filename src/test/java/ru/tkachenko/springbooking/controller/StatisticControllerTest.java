@@ -12,6 +12,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class StatisticControllerTest extends AbstractTestController {
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
+    public void whenCalledStatisticWithWrongPath_thenReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/stats")
+                        .param("pathToFolder", "var?uploads"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+    }
+
     @Test
     public void whenCalledWithoutRole_thenReturnUnauthorized() throws Exception {
         mockMvc.perform(get("/api/stats"))

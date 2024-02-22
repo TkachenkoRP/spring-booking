@@ -86,7 +86,7 @@ public class BookingControllerTest extends AbstractTestController {
         BookingResponse response = objectMapper.readValue(actualResponse, BookingResponse.class);
         assertEquals(5, response.getId());
         assertEquals(1, response.getUser().getId());
-        assertEquals(32, count);
+        assertEquals(38, count);
 
         RoomBookedEvent receivedEvent = getKafkaMessage(RoomBookedEvent.class, KAFKA_BOOKING_TOPIC);
 
@@ -272,8 +272,8 @@ public class BookingControllerTest extends AbstractTestController {
     public void whenCreateBookingWithFalseDate_thenReturnError() throws Exception {
         UpsertBookingRequest request = new UpsertBookingRequest();
         request.setRoomId(1L);
-        request.setArrivalDate(LocalDate.of(2024, 2, 22));
-        request.setDepartureDate(LocalDate.of(2024, 2, 27));
+        request.setArrivalDate(LocalDate.of(2222, 1, 2));
+        request.setDepartureDate(LocalDate.of(2222, 1, 5));
 
         var response = mockMvc.perform(post("/api/booking")
                         .header("Authorization", USER_AUTHORIZATION)

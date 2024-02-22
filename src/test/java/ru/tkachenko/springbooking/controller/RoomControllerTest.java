@@ -17,6 +17,7 @@ import ru.tkachenko.springbooking.StringTestUtils;
 import ru.tkachenko.springbooking.dto.RoomResponse;
 import ru.tkachenko.springbooking.dto.UpsertRoomRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -182,8 +183,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnAllRooms() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-03-02")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", "2221-03-02")
+                        .param("departureDate", "2221-03-04"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -200,8 +201,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRooms() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-02-22")
-                        .param("departureDate", "2024-03-06"))
+                        .param("arrivalDate", "2221-02-22")
+                        .param("departureDate", "2221-03-10"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -218,8 +219,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRoomsPlusOne() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-02-22")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", "2221-02-22")
+                        .param("departureDate", "2221-03-04"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -236,8 +237,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalAndDepartureDateFilter_thenReturnFilteredRoomsPlusTwo() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-03-01")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", "2221-02-01")
+                        .param("departureDate", "2221-02-23"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -253,8 +254,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithWrongDateFilter_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-033-01")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", "2221-033-01")
+                        .param("departureDate", "2221-03-04"))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse();
@@ -271,8 +272,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalDateIsBeforeDepartureDateFilter_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-03-05")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", "2221-03-05")
+                        .param("departureDate", "2221-03-04"))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse();
@@ -289,8 +290,8 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithDateIsBeforeNowFilter_thenReturnError() throws Exception {
         var response = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2023-03-05")
-                        .param("departureDate", "2024-03-04"))
+                        .param("arrivalDate", LocalDate.now().minusDays(1).toString())
+                        .param("departureDate", "2221-03-04"))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse();
@@ -308,7 +309,7 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithArrivalDateFilter_thenReturnAllRoomsWithoutFilter() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("arrivalDate", "2024-02-22"))
+                        .param("arrivalDate", "2221-02-22"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -325,7 +326,7 @@ public class RoomControllerTest extends AbstractTestController {
     @WithMockUser(username = "User")
     public void whenFindAllRoomsWithDepartureDateFilter_thenReturnAllRoomsWithoutFilter() throws Exception {
         String actualResponse = mockMvc.perform(get("/api/room")
-                        .param("departureDate", "2024-03-07"))
+                        .param("departureDate", "2221-03-07"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
