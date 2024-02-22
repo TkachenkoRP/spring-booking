@@ -372,6 +372,8 @@ public class RoomControllerTest extends AbstractTestController {
         assertEquals(1, response.getNumber());
         assertEquals(4500, response.getPrice());
         assertEquals((byte) 3, response.getCapacity());
+        assertEquals(1, response.getHotelId());
+        assertEquals("Hotel_1", response.getHotelName());
     }
 
     @Test
